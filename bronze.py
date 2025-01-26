@@ -28,13 +28,37 @@ dbutils.secrets.list("akv")
 
 # COMMAND ----------
 
-spark.conf.set(
-    "fs.azure.account.key.dlhpikadev.dfs.core.windows.net",
-    dbutils.secrets.get(scope="akv", key="secretAccessKeyDataLake")
-)
+df1 = spark.read.format("json").load("/Volumes/bronze/raw/raw/IGDB/games/dcac6327-3add-5a38-9f3e-ec3954219476/")
+
+df1.display()
 
 # COMMAND ----------
 
-df = spark.read.format("json").load("abfss://raw@dlhpikadev.dfs.core.windows.net/IGDB/games/dcac6327-3add-5a38-9f3e-ec3954219476/")
+df1.select("id").count() # 2676
 
-df.display()
+
+# COMMAND ----------
+
+df1.select("id").distinct().count() # 2676
+
+# COMMAND ----------
+
+df2 = spark.read.format("json").load("/Volumes/bronze/raw/raw/IGDB/games/f78b38ca-2850-5171-8924-31b381cffdd6/")
+
+df2.display()
+
+# COMMAND ----------
+
+df2.select("id").count() # 301323
+
+# COMMAND ----------
+
+df2.select("id").distinct().count() # 301315
+
+# COMMAND ----------
+
+df1.union(df2).count() #303999
+
+# COMMAND ----------
+
+df1.union(df2).distinct().count() #301426
